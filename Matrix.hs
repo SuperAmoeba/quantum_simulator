@@ -131,3 +131,16 @@ isDiagonal a = let (m, n) = dimension a in
       h :: Num y => Matrix y -> Int -> [y]
       h (M []) _ = []
       h (M (a:as)) i = (a /! i) ++ h (M as) (i+1)
+
+-- tensor product
+(*/) :: Num y => Matrix y -> Matrix y -> Matrix y
+(*/) (M a) (M b) = M (h a b b)
+  where
+    h :: Num y => [[y]] -> [[y]] -> [[y]] -> [[y]]
+    h [] _ _           = []
+    h (a:as) [] b'     = h as b' b'
+    h (a:as) (b:bs) b' = (g a b) : (h (a:as) bs b')
+      where
+        g :: Num y => [y] -> [y] -> [y]
+        g [] _ = []
+        g (x:xs) zs = map (x *) zs ++ (g xs zs)
