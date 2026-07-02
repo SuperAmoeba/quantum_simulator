@@ -1,5 +1,7 @@
 module Matrix where
 
+import Complex
+
 data Matrix a = M [[a]]
 
 instance Show a => Show (Matrix a) where
@@ -39,6 +41,21 @@ instance Num y => Num (Matrix y) where
                   h' _ [] = []
                   h' a (b:bs) = (foldl (+) 0 (zipWith (*) a b)) : (h' a bs)
 
+class Conjugatable a where
+  conj :: a -> a
+
+instance RealFloat a => Conjugatable (Complex a) where
+  conj = conjugate
+
+instance Conjugatable Int where
+  conj = id
+instance Conjugatable Integer where
+  conj = id
+instance Conjugatable Double where
+  conj = id
+instance Conjugatable Float  where
+  conj = id
+
 
 -- applies a function f n times
 fn :: (a -> a) -> Int -> a -> a
@@ -51,6 +68,11 @@ fn f n x = if n == 0 then x else f (fn f (n-1) x)
     h :: [a] -> Int -> Int -> [a]
     h [] _ _ = []
     h (x:xs) i j = if i == j then xs else x : h xs i (j+1)
+
+-- map on [[a]]
+mapLL :: (a -> a) -> [[a]] -> [[a]]
+mapLL f [] = []
+mapLL f (l:ls) = (map f l) : (mapLL f ls)
 
 -- fills empty spaces with 0s (might need refining for neutral element of every Num a instead of 0. z.B. frac "0/1" for my Brüche)
 fillMatrix :: Num a => Matrix a -> Matrix a
@@ -95,6 +117,10 @@ transpose m = let (z, s) = dimension m in M (h m (s-1))
   where
     h (M as) (-1) = []
     h (M as) n = h (M as) (n-1) ++ [map (!! n) as]
+
+-- conjugate transpose, duh
+conjugateTranspose :: (Num y, Conjugatable y) => Matrix y -> Matrix y
+conjugateTranspose (M a) = transpose $ M (mapLL conj a)
 
 -- checks if the Matrix is a diagonal Matrix
 isDiagonal :: (Num y, Eq y) => Matrix y -> Bool
