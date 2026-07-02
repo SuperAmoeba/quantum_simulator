@@ -134,7 +134,7 @@ isDiagonal a = let (m, n) = dimension a in
 
 -- tensor product
 (*/) :: Num y => Matrix y -> Matrix y -> Matrix y
-(*/) (M a) (M b) = M (h a b b)
+(*/) (M a) (M b) = M (h a b b) -- M of habibi
   where
     h :: Num y => [[y]] -> [[y]] -> [[y]] -> [[y]]
     h [] _ _           = []
@@ -144,3 +144,19 @@ isDiagonal a = let (m, n) = dimension a in
         g :: Num y => [y] -> [y] -> [y]
         g [] _ = []
         g (x:xs) zs = map (x *) zs ++ (g xs zs)
+
+-- creates an identity matrix of dimension  n x n
+identity_n :: Num y => Int -> Matrix y
+identity_n n = mkMatrix (h n 0)
+  where
+    h :: Num y => Int -> Int -> [[y]]
+    h n i = if n > i then (fn (0 :) i [] ++ [1]) : (h n (i+1)) else []
+
+-- checks if the Matrix is a Unitary Matrix
+isUnitary :: (Num y, Conjugatable y, Eq y) => Matrix y -> Bool
+isUnitary m =
+  let
+    (n, _) = dimension m
+    m'     = conjugateTranspose m
+  in
+    m * m' == identity_n n
