@@ -194,6 +194,11 @@ parseComplex s =
                   in [(r :+ signFn mag, rest4)]
                 else []
            _ -> []
+
+isComplex :: (Num y, Eq y) => Complex y -> Bool
+isComplex (_ :+ b) = b /= 0
+isComplex _        = False
+
 -- -----------------------------------------------------------------------------
 
 -- Functions over Complex

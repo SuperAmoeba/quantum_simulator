@@ -2,6 +2,7 @@ module QGates where
 
 import Matrix
 import Complex
+import Fraction
 
 type State a = Matrix a
 type Gate a = (State a -> State a)

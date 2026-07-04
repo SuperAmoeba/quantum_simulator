@@ -1,6 +1,7 @@
 module Matrix where
 
 import Complex
+import Fraction
 
 data Matrix a = M [[a]]
 
@@ -40,6 +41,7 @@ instance Num y => Num (Matrix y) where
                   h' :: Num y => [y] -> [[y]] -> [y]
                   h' _ [] = []
                   h' a (b:bs) = (foldl (+) 0 (zipWith (*) a b)) : (h' a bs)
+
 
 class Conjugatable a where
   conj :: a -> a
@@ -151,6 +153,13 @@ identity_n n = mkMatrix (h n 0)
   where
     h :: Num y => Int -> Int -> [[y]]
     h n i = if n > i then (fn (0 :) i [] ++ [1]) : (h n (i+1)) else []
+
+-- creates a diagonal matrix where the diagonal entries are a number d
+diagonal_n_d :: Num y => Int -> y -> Matrix y
+diagonal_n_d n d = mkMatrix (h n d 0)
+  where
+    h :: Num y => Int -> y -> Int -> [[y]]
+    h n d i = if n > i then (fn (0 :) i [] ++ [d]) : (h n d (i+1)) else []
 
 -- checks if the Matrix is a Unitary Matrix
 isUnitary :: (Num y, Conjugatable y, Eq y) => Matrix y -> Bool
